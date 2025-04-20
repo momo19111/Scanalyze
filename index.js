@@ -43,7 +43,6 @@ app.use("/api/v1/patients", patientRoute);
 
 app.use(globalError);
 
-const port = process.env.PORT || 5000;
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+app.listen(8080, "0.0.0.0", () => {
+  console.log("Server is running on http://0.0.0.0:8080");
 });
