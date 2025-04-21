@@ -38,7 +38,7 @@ exports.verifyPatient = asyncHandler(async (req, res, next) => {
     }
 
     patient.verifyAccount = true;
-    await patient.save(); 
+    await patient.save();
 
     res.status(200).json({
         status: 'success',
@@ -47,5 +47,5 @@ exports.verifyPatient = asyncHandler(async (req, res, next) => {
             patient
         }
     });
-});
+})
 
