@@ -43,6 +43,6 @@ app.use("/api/v1/patients", patientRoute);
 
 app.use(globalError);
 
-app.listen(8080, "0.0.0.0", () => {
-  console.log("Server is running on http://0.0.0.0:8080");
+app.listen(8080, () => {
+  console.log(`Server is running on http://localhost:8080`);
 });
