@@ -1,18 +1,26 @@
 const { Client, LocalAuth } = require("whatsapp-web.js");
 const qrcode = require("qrcode-terminal");
+const os = require("os");
 
 let client;
 
 const initWhatsapp = async () => {
   if (client) return client; // Return if already initialized
 
+  // Base puppeteer options
+  const puppeteerOptions = {
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  };
+
+  // Check if running on Linux (likely Azure VM)
+  if (os.platform() === "linux") {
+    puppeteerOptions.executablePath = "/usr/bin/google-chrome-stable";
+  }
+
   client = new Client({
     authStrategy: new LocalAuth(),
-    puppeteer: {
-      headless: true,
-      executablePath: "/usr/bin/google-chrome-stable",
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    },
+    puppeteer: puppeteerOptions,
   });
 
   client.on("qr", (qr) => {
