@@ -7,7 +7,7 @@ const initWhatsapp = async () => {
   if (client) return client; // Return if already initialized
 
   client = new Client({
-    authStrategy: new LocalAuth({ dataPath: "./session-data" }),
+    authStrategy: new LocalAuth(),
     puppeteer: {
       headless: true,
       executablePath: "/usr/bin/google-chrome-stable",
@@ -20,6 +20,7 @@ const initWhatsapp = async () => {
         "--no-zygote",
         "--single-process",
         "--disable-gpu",
+        "--disable-popup-blocking",
       ],
     },
   });
