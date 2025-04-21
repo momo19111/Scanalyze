@@ -203,7 +203,7 @@ exports.sendOtpToWhatsApp = asyncHandler(async (req, res, next) => {
     { upsert: true }
   );
 
-  res.status(200).json({ message: "OTP sent to WhatsApp successfully" });
+
 });
 
 exports.verifyOtp = asyncHandler(async (req, res, next) => {

@@ -1,5 +1,6 @@
 const factory = require('./factoryHandler');
 const Patient = require('../models/patient.model');
+const asyncHandler = require('express-async-handler')
 
 
 
@@ -28,4 +29,23 @@ exports.updatePatient = factory.updateOne(Patient);
 // @access  Private/Admin
 exports.deletePatient = factory.deleteOne(Patient);
 
+
+exports.verifyPatient = asyncHandler(async (req, res, next) => {
+    const patient = await Patient.findById(req.params.id);
+    
+    if (!patient) {
+        return next(new ApiError('Patient not found', 404));
+    }
+
+    patient.verifyAccount = true;
+    await patient.save(); 
+
+    res.status(200).json({
+        status: 'success',
+        message: 'Patient account verified successfully',
+        data: {
+            patient
+        }
+    });
+});
 
