@@ -1,5 +1,6 @@
 const { Client, LocalAuth } = require("whatsapp-web.js");
 const qrcode = require("qrcode-terminal");
+const puppeteer = require("puppeteer");
 
 let client;
 
@@ -7,12 +8,12 @@ const initWhatsapp = async () => {
   if (client) return client; // Return if already initialized
 
   client = new Client({
-    authStrategy: new LocalAuth(),
     puppeteer: {
+      executablePath: puppeteer.executablePath(),
       headless: true,
-      executablePath: "/usr/bin/google-chrome-stable",
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     },
+    authStrategy: new LocalAuth(),
   });
 
   client.on("qr", (qr) => {
