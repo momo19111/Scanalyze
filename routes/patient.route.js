@@ -23,7 +23,7 @@ router
 router
     .route('/:id')
     .get(getUserValidator, getPatient)
-    .put(uploadUserImage, resizeImage, updateUserValidator, updatePatient)
+    .put(uploadUserImage,  resizeImage, updateUserValidator, updatePatient)
     .delete(deleteUserValidator, deletePatient);
 
 
