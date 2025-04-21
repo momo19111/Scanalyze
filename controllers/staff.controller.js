@@ -4,6 +4,8 @@ const sharp = require('sharp');
 const { uploadSingleImage } = require('../middlewares/uploadImageMiddleware');
 const factory = require('./factoryHandler');
 const Staff = require('../models/staff.model');
+const Patient = require('../models/patient.model')
+const ApiError = require('../utils/apiError');
 
 // Upload single image
 exports.uploadUserImage = uploadSingleImage('imageProfile');

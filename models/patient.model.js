@@ -18,6 +18,8 @@ const patientSchema = new mongoose.Schema({
     },
     nationalID: {
         type: String,
+        unique: true,
+        sparse: true,
     },
     nationalIDImg: {
         type: String,

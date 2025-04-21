@@ -41,7 +41,6 @@ exports.createUserValidator = [
         .withMessage('Last name must be at least 3 characters long'),
         
     check('phone')
-        .optional()
         .isMobilePhone(['ar-EG', 'ar-SA'])
         .withMessage('Invalid phone number only accepted Egy and SA Phone numbers')
         .custom((val) =>

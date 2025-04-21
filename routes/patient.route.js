@@ -5,6 +5,7 @@ const { getPatient,
         createPatient,
         updatePatient,
         deletePatient,
+        verifyPatient
 
 } = require('../controllers/patient.controller');
 const { protect, allowedTo, uploadUserImage, resizeImage } = require('../controllers/auth.controller');
@@ -17,7 +18,8 @@ router
     .get(getAllPatients)
     .post(uploadUserImage, resizeImage, createUserValidator, createPatient);
 router
-    .route('/:id')
+    .route('/verifyPatient/:id')
+    .post(verifyPatient)
     .get(getUserValidator, getPatient)
     .put(uploadUserImage, resizeImage, updateUserValidator, updatePatient)
     .delete(deleteUserValidator, deletePatient);

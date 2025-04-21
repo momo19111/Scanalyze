@@ -6,7 +6,8 @@ const { getStaff,
         updateStaff,
         deleteStaff,
         uploadUserImage,
-        resizeImage
+        resizeImage,
+
 } = require('../controllers/staff.controller');
 const { protect, allowedTo } = require('../controllers/auth.controller');
 const { createUserValidator, getUserValidator, deleteUserValidator, updateUserValidator } = require('../utils/validator/staffValidator');
