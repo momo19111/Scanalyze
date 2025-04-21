@@ -20,6 +20,8 @@ router
 router
     .route('/verifyPatient/:id')
     .post(verifyPatient)
+router
+    .route('/:id')
     .get(getUserValidator, getPatient)
     .put(uploadUserImage, resizeImage, updateUserValidator, updatePatient)
     .delete(deleteUserValidator, deletePatient);
