@@ -12,7 +12,7 @@ const { getStaff,
 const { protect, allowedTo } = require('../controllers/auth.controller');
 const { createUserValidator, getUserValidator, deleteUserValidator, updateUserValidator } = require('../utils/validator/staffValidator');
 
-router.use(protect, allowedTo('Admin'));
+router.use(protect,   allowedTo('Admin'));
 
 router
     .route('/')
