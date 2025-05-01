@@ -13,4 +13,4 @@ router.post('/patient/login/phone', loginPhoneValidator, loginPhonePatient);
 router.post('/patient/login/national-id', loginNationalIDValidator, loginNationalID);
 
 
-module.exports = router ;
+module.exports = router;
