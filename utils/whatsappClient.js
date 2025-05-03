@@ -9,7 +9,6 @@ const initWhatsapp = async () => {
 
   client = new Client({
     puppeteer: {
-      executablePath: puppeteer.executablePath(),
       headless: true,
       args: [
         "--no-sandbox",

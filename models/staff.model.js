@@ -56,10 +56,11 @@ next();
 
 const setImageURL = (doc) => {
     if (doc.imageProfile) {
-        const imageUrl = `${process.env.BASE_URL}/staff/${doc.imageProfile}`;
+        const imageUrl = `${doc.imageProfile}`;
         doc.imageProfile = imageUrl;
     }
 };
+
 
 function processNationalId(doc) {
     if (!doc.nationalId || doc.nationalId.length !== 14) {

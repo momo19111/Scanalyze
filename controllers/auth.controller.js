@@ -10,6 +10,9 @@ const Patient = require("../models/patient.model");
 const generateToken = require("../utils/generateToken");
 const { generateOTP } = require("../utils/otpGenerator");
 const { initWhatsapp } = require("../utils/whatsappClient");
+const { cloudinary } = require('../config/cloudinary');
+const streamifier = require('streamifier');
+
 
 exports.register = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -281,17 +284,31 @@ exports.uploadUserImage = uploadSingleImage("nationalIDImg");
 
 // Image processing
 exports.resizeImage = asyncHandler(async (req, res, next) => {
-  const filename = `user-${uuidv4()}-${Date.now()}.jpeg`;
+    if (!req.file) return next();
 
-  if (req.file) {
-    await sharp(req.file.buffer)
-      .resize(300, 300)
-      .toFormat("jpeg")
-      .jpeg({ quality: 95 })
-      .toFile(`uploads/patient/national-id/${filename}`);
+    const filename = `nationalId-${uuidv4()}-${Date.now()}`;
 
-    req.body.nationalIDImg = filename;
-  }
+    const buffer = await sharp(req.file.buffer)
+        .resize(600, 600)
+        .toFormat('jpeg')
+        .jpeg({ quality: 95 })
+        .toBuffer();
 
-  next();
+    await new Promise((resolve, reject) => {
+        const upload_stream = cloudinary.uploader.upload_stream(
+        {
+            folder: 'patient/nationalId',
+            public_id: filename,
+            resource_type: 'image',
+        },
+        (error, result) => {
+            if (error) return reject(error);
+            req.body.nationalIDImg = result.secure_url; 
+            resolve();
+        }
+        );
+        streamifier.createReadStream(buffer).pipe(upload_stream);
+    });
+
+    next();
 });

@@ -4,30 +4,43 @@ const sharp = require('sharp');
 const { uploadSingleImage } = require('../middlewares/uploadImageMiddleware');
 const factory = require('./factoryHandler');
 const Staff = require('../models/staff.model');
-const Patient = require('../models/patient.model')
-const ApiError = require('../utils/apiError');
+const { cloudinary } = require('../config/cloudinary');
+const streamifier = require('streamifier');
+
 
 // Upload single image
 exports.uploadUserImage = uploadSingleImage('imageProfile');
 
 // Image processing
 exports.resizeImage = asyncHandler(async (req, res, next) => {
-    const filename = `user-${uuidv4()}-${Date.now()}.jpeg`;
+    if (!req.file) return next();
 
-    if (req.file) {
-        await sharp(req.file.buffer)
+    const filename = `profile-${uuidv4()}-${Date.now()}`;
+
+    const buffer = await sharp(req.file.buffer)
         .resize(600, 600)
         .toFormat('jpeg')
         .jpeg({ quality: 95 })
-        .toFile(`uploads/staff/${filename}`);
+        .toBuffer();
 
-        // Save image into our db
-        req.body.imageProfile = filename;
-    }
+    await new Promise((resolve, reject) => {
+        const upload_stream = cloudinary.uploader.upload_stream(
+        {
+            folder: 'staff/profile', 
+            public_id: filename,
+            resource_type: 'image',
+        },
+        (error, result) => {
+            if (error) return reject(error);
+            req.body.imageProfile = result.secure_url; 
+            resolve();
+        }
+        );
+        streamifier.createReadStream(buffer).pipe(upload_stream);
+    });
 
     next();
 });
-
 // @desc    Get list of staff
 // @route   GET /api/v1/staff
 // @access  Private/Admin

@@ -81,7 +81,7 @@ next();
 
 const setImageURL = (doc) => {
     if (doc.nationalIDImg) {
-        const imageUrl = `${process.env.BASE_URL}/patient/national-id/${doc.nationalIDImg}`;
+        const imageUrl = `${doc.nationalIDImg}`;
         doc.nationalIDImg = imageUrl;
     }
 };

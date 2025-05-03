@@ -1,6 +1,5 @@
 const express = require("express");
 const app = express();
-const path = require("path");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const ApiError = require("./utils/apiError");
@@ -12,6 +11,7 @@ const authRoute = require("./routes/auth.route");
 const staffRoute = require("./routes/staff.route");
 const branchRoute = require("./routes/branch.route");
 const patientRoute = require("./routes/patient.route");
+const scanRoute = require("./routes/scan.route");
 const globalError = require("./middlewares/globalError");
 
 // Connect to MongoDB
@@ -31,7 +31,6 @@ const corsOptions = {
 
 // Middleware
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "uploads")));
 app.use(cookieParser());
 app.use(cors(corsOptions));
 
@@ -40,6 +39,7 @@ app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/staff", staffRoute);
 app.use("/api/v1/branches", branchRoute);
 app.use("/api/v1/patients", patientRoute);
+app.use("/api/v1/scans", scanRoute);
 
 app.use(globalError);
 
