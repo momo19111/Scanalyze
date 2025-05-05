@@ -16,7 +16,12 @@ exports.createUserValidator = [
             return Promise.reject(new Error('E-mail already in user'));
             }
         })
-        ),
+    ),
+    check('medicalHistory')
+        .notEmpty()
+        .withMessage('Medical history required')
+        .isLength({ min: 3 })
+        .withMessage('Medical history must be at least 3 characters long'),
 
     check('password')
         .notEmpty()

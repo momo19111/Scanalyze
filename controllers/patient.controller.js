@@ -17,7 +17,17 @@ exports.getPatient = factory.getOne(Patient);
 // @desc    Create Patient
 // @route   POST  /api/v1/branchs
 // @access  Private/Admin
-exports.createPatient = factory.createOne(Patient);
+exports.createPatient = asyncHandler(async (req, res, next) => {
+    const medicalHistory = JSON.parse(req.body.medicalHistory);
+    const newPatient = await Patient.create({ ...req.body, medicalHistory }); 
+    
+    res.status(201).json({
+        status: 'success',
+        data: {
+        patient: newPatient,
+        },
+    });
+    })
 
 // @desc    Update specific Patient
 // @route   PUT /api/v1/patients/:id
