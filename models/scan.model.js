@@ -96,7 +96,7 @@ scanSchema.pre('save', async function (next) {
             phone: patientData.phone,
             email: patientData.email,
             gender: patientData.gender,
-            medicalHistory: patientData.medicalHistory,
+            medicalHistory: JSON.parse(patientData.medicalHistory),
             nationalID: patientData.nationalID,
             birthDate: patientData.birthDate,
             age: patientData.age
