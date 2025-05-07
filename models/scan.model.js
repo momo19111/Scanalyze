@@ -84,6 +84,42 @@ function processNationalId(doc) {
     doc.age = age;
 }
 
+
+
+scanSchema.pre('findOneAndUpdate', async function (next) {
+    const update = this.getUpdate();
+  
+  // only run if the patient field is changing
+    if (update.patient) {
+    const Patient = mongoose.model('Patient');
+    const patientData = await Patient.findById(update.patient).lean();
+    if (patientData) {
+      // build new snapshot
+    const snapshot = {
+        firstName:   patientData.firstName,
+        lastName:    patientData.lastName,
+        phone:       patientData.phone,
+        email:       patientData.email,
+        gender:      patientData.gender,
+        medicalHistory: JSON.parse(patientData.medicalHistory),  // assuming it's already an object
+        nationalID:  patientData.nationalID,
+        birthDate:   patientData.birthDate,
+        age:         patientData.age
+        };
+        // apply your nationalId processing:
+        processNationalId(snapshot);
+
+        // merge into the update payload
+        this.setUpdate({
+            ...update,
+            patientSnapshot: snapshot
+        });
+        }
+    }
+
+    next();
+});
+
 scanSchema.pre('save', async function (next) {
   if (this.isNew || this.isModified('patient')) {
     const Patient = mongoose.model('Patient');
