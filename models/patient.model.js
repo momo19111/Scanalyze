@@ -70,6 +70,8 @@ const patientSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    birthDate: { type: String }, 
+    age: { type: Number }, 
 }, {timestamps: true});
 
 patientSchema.pre('save', async function (next) {
@@ -86,8 +88,31 @@ const setImageURL = (doc) => {
     }
 };
 
+function processNationalId(doc) {
+    if (!doc.nationalID || doc.nationalID.length !== 14) {
+        return new Error('Invalid national ID format. It should be 14 digits long.', 400);
+    };
+
+    const century = doc.nationalID.charAt(0) === '2' ? '19' : '20';
+    const year = century + doc.nationalID.substring(1, 3);
+    const month = doc.nationalID.substring(3, 5);
+    const day = doc.nationalID.substring(5, 7);
+    const birthDate = new Date(`${year}-${month}-${day}`);
+    
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    if (today.getMonth() < birthDate.getMonth() || 
+        (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())) {
+        age--;
+        }
+
+    doc.birthDate = birthDate.toISOString().split('T')[0];
+    doc.age = age;
+}
+
 // findOne, findAll and update
 patientSchema.post('init', (doc) => {
+    processNationalId(doc);
     setImageURL(doc);
 });
 

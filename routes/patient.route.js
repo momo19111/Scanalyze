@@ -11,7 +11,7 @@ const { getPatient,
 const { protect, allowedTo, uploadUserImage, resizeImage } = require('../controllers/auth.controller');
 const { createUserValidator, getUserValidator, deleteUserValidator,  updateUserValidator } = require('../utils/validator/patientValidator');
 
-router.use(protect, allowedTo('Admin', 'Receptionist'));
+router.use(protect, allowedTo('Admin', 'Receptionist', 'LabTechnician', 'ScanTechnician'));
 
 router
     .route('/')
