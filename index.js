@@ -12,7 +12,9 @@ const staffRoute = require("./routes/staff.route");
 const branchRoute = require("./routes/branch.route");
 const patientRoute = require("./routes/patient.route");
 const scanRoute = require("./routes/scan.route");
+const compression = require("compression");
 const globalError = require("./middlewares/globalError");
+
 
 // Connect to MongoDB
 connectDB();
@@ -33,6 +35,7 @@ const corsOptions = {
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
+app.use(compression()); // Compress all routes
 
 // Apis
 app.use("/api/v1/auth", authRoute);
