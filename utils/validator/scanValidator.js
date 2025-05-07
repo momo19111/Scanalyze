@@ -8,8 +8,8 @@ exports.createScanValidator = [
         .notEmpty()
         .withMessage('Scan name is required') 
         .toLowerCase()
-        .isIn(['pneumonia', 'lung cancer', 'kidney diseases', 'covid-19', 'knee osteoarthritis', 'diabetic retinopathy'])
-        .withMessage('Name must be one of: Pneumonia, Lung Cancer, Kidney Diseases, Covid-19, Knee Osteoarthrit'),
+        .isIn(['pneumonia', 'lung cancer', 'kidney diseases', 'covid-19', 'knee osteoarthritis', 'diabetic retinopathy', 'brain tumor', 'tuberculosis chest'])
+        .withMessage('Name must be one of: Pneumonia, Lung Cancer, Kidney Diseases, Covid-19, Knee Osteoarthrit, Brain Tumor, Tuberculosis Chest'),
     
     
     check('patient')
@@ -41,8 +41,8 @@ exports.updateScanValidator = [
     check('type')
         .optional() 
         .toLowerCase()
-        .isIn(['pneumonia', 'lung cancer', 'kidney diseases', 'covid-19', 'knee osteoarthritis', 'diabetic retinopathy'])
-        .withMessage('Name must be one of: Pneumonia, Lung Cancer, Kidney Diseases, Covid-19, Knee Osteoarthritis, Diabetic Retinopathy'),
+        .isIn(['pneumonia', 'lung cancer', 'kidney diseases', 'covid-19', 'knee osteoarthritis', 'diabetic retinopathy', 'brain tumor', 'tuberculosis chest'])
+        .withMessage('Name must be one of: Pneumonia, Lung Cancer, Kidney Diseases, Covid-19, Knee Osteoarthritis, Diabetic Retinopathy, Brain Tumor, Tuberculosis Chest'),
     
     check('patient')
         .optional() 
