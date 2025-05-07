@@ -7,7 +7,7 @@ const asyncHandler = require('express-async-handler')
 // @desc    Get list of Patient
 // @route   GET /api/v1/patients
 // @access  Private/Admin
-exports.getAllPatients = factory.getAll(Patient);
+exports.getAllPatients = factory.getAll(Patient, '');
 
 // @desc    Get specific Patient by id
 // @route   GET /api/v1/patients/:id

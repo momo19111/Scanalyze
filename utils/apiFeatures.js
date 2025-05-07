@@ -40,7 +40,7 @@ limitFields() {
 search(modelName) {
     if (this.queryString.keyword) {
         let query = {};
-        if (modelName === 'Products') {
+        if (modelName === 'Patient') {
             query.$or = [
             { title: { $regex: this.queryString.keyword, $options: 'i' } },
             { description: { $regex: this.queryString.keyword, $options: 'i' } },
