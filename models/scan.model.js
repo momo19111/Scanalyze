@@ -62,6 +62,27 @@ const scanSchema = new mongoose.Schema({
     }
 }, { timestamps: true })
 
+function processNationalId(doc) {
+    if (!doc.nationalID || doc.nationalID.length !== 14) {
+        return new Error('Invalid national ID format. It should be 14 digits long.', 400);
+    };
+
+    const century = doc.nationalID.charAt(0) === '2' ? '19' : '20';
+    const year = century + doc.nationalID.substring(1, 3);
+    const month = doc.nationalID.substring(3, 5);
+    const day = doc.nationalID.substring(5, 7);
+    const birthDate = new Date(`${year}-${month}-${day}`);
+    
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    if (today.getMonth() < birthDate.getMonth() || 
+        (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())) {
+        age--;
+        }
+
+    doc.birthDate = birthDate.toISOString().split('T')[0];
+    doc.age = age;
+}
 
 scanSchema.pre('save', async function (next) {
   if (this.isNew || this.isModified('patient')) {
@@ -80,7 +101,8 @@ scanSchema.pre('save', async function (next) {
             birthDate: patientData.birthDate,
             age: patientData.age
         };
-        }
+      }
+      processNationalId(this.patientSnapshot);
     }
     next();
 });
