@@ -101,7 +101,7 @@ scanSchema.pre('findOneAndUpdate', async function (next) {
         phone:       patientData.phone,
         email:       patientData.email,
         gender:      patientData.gender,
-        medicalHistory: JSON.parse(patientData.medicalHistory),  // assuming it's already an object
+        medicalHistory: patientData.medicalHistory,  // assuming it's already an object
         nationalID:  patientData.nationalID,
         birthDate:   patientData.birthDate,
         age:         patientData.age
