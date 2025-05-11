@@ -12,17 +12,17 @@ const { getStaff,
 const { protect, allowedTo } = require('../controllers/auth.controller');
 const { createUserValidator, getUserValidator, deleteUserValidator, updateUserValidator } = require('../utils/validator/staffValidator');
 
-router.use(protect,   allowedTo('Admin'));
+router.use(protect);
 
 router
     .route('/')
     .get(getAllStaff)
-    .post(uploadUserImage, resizeImage, createUserValidator, createStaff);
+    .post(allowedTo('Admin'), uploadUserImage, resizeImage, createUserValidator, createStaff);
 router
     .route('/:id')
     .get(getUserValidator, getStaff)
-    .put(uploadUserImage, resizeImage, updateUserValidator, updateStaff )
-    .delete(deleteUserValidator, deleteStaff);
+    .put(allowedTo('Admin'), uploadUserImage, resizeImage, updateUserValidator, updateStaff )
+    .delete(allowedTo('Admin'), deleteUserValidator, deleteStaff);
 
 
 module.exports = router;
