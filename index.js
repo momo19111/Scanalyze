@@ -12,6 +12,7 @@ const staffRoute = require("./routes/staff.route");
 const branchRoute = require("./routes/branch.route");
 const patientRoute = require("./routes/patient.route");
 const scanRoute = require("./routes/scan.route");
+const labTestRoute = require("./routes/labTest.route");
 const compression = require("compression");
 const globalError = require("./middlewares/globalError");
 
@@ -43,6 +44,7 @@ app.use("/api/v1/staff", staffRoute);
 app.use("/api/v1/branches", branchRoute);
 app.use("/api/v1/patients", patientRoute);
 app.use("/api/v1/scans", scanRoute);
+app.use("/api/v1/labTests", labTestRoute);
 
 app.use(globalError);
 
