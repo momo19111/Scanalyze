@@ -324,3 +324,40 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
 
     next();
 });
+
+
+
+
+exports.getProfile = asyncHandler(async (req, res) => {
+    const { patientId } = req.params; 
+    const patient = await Patient.findById(patientId);  
+
+    if (!patient) {
+        return res.status(404).json({ message: "Patient not found" });
+    }
+
+    const publicPatientProfile = {
+        firstName: patient.firstName,
+        lastName: patient.lastName,
+        phone: patient.phone,
+        email: patient.email,
+        gender: patient.gender,
+        nationalID: patient.nationalID,
+        nationalIDImg: patient.nationalIDImg,
+        birthDate: patient.birthDate,
+        age: patient.age,
+        medicalHistory: {
+            chronicDiseases: patient.medicalHistory.chronicDiseases,
+            allergies: patient.medicalHistory.allergies,
+            medications: patient.medicalHistory.medications,
+            surgeries: patient.medicalHistory.surgeries,
+            currentSymptoms: patient.medicalHistory.currentSymptoms,
+            lifestyle: patient.medicalHistory.lifestyle
+        }
+    };
+
+    res.status(200).json({
+        message: "Patient profile retrieved successfully",
+        patient: publicPatientProfile
+    });
+});
