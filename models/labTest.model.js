@@ -6,7 +6,7 @@ const testSchema = new mongoose.Schema({
   value: { type: String, required: true },
   normalRange: { type: String, required: true },
   unit: { type: String, required: true },
-  status: { type: String, enum: ['Normal', 'Abnormal'], required: true }
+  status: { type: String, required: true }
 }, { _id: false });
 
 const testResultSchema = new mongoose.Schema({
