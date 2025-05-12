@@ -16,7 +16,7 @@ const testResultSchema = new mongoose.Schema({
 
 const labReportSchema = new mongoose.Schema({
   patient: { type: mongoose.Schema.Types.ObjectId, ref: 'Patient', required: true },
-  branch: { type: mongoose.Schema.Types.ObjectId, ref: 'Branch', required: true },
+  branch: { type: mongoose.Schema.Types.ObjectId, ref: 'Branch'},
   labTechnician: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   patientSnapshot: {
     firstName: String,
