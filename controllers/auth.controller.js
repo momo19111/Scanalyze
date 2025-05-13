@@ -343,6 +343,7 @@ exports.getProfile = asyncHandler(async (req, res) => {
         email: patient.email,
         gender: patient.gender,
         birthDate: patient.birthDate,
+        nationalID: patient.nationalID,
         age: patient.age,
         medicalHistory: {
             chronicDiseases: patient.medicalHistory.chronicDiseases,
