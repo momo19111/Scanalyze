@@ -342,8 +342,6 @@ exports.getProfile = asyncHandler(async (req, res) => {
         phone: patient.phone,
         email: patient.email,
         gender: patient.gender,
-        nationalID: patient.nationalID,
-        nationalIDImg: patient.nationalIDImg,
         birthDate: patient.birthDate,
         age: patient.age,
         medicalHistory: {
