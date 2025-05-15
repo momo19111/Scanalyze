@@ -5,7 +5,8 @@ const { getPatient,
         createPatient,
         updatePatient,
         deletePatient,
-        verifyPatient
+        verifyPatient,
+        declinePatient
 
 } = require('../controllers/patient.controller');
 const { protect, allowedTo, uploadUserImage, resizeImage } = require('../controllers/auth.controller');
@@ -20,6 +21,9 @@ router
 router
     .route('/verifyPatient/:id')
     .post(allowedTo('Admin', 'Receptionist', 'LabTechnician', 'ScanTechnician'), verifyPatient)
+router
+    .route('/declinePatient/:id')
+    .post(allowedTo('Admin', 'Receptionist', 'LabTechnician', 'ScanTechnician'), declinePatient)
 router
     .route('/:id')
     .get(getUserValidator, getPatient)

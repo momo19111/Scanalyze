@@ -64,6 +64,10 @@ exports.loginNationalID = asyncHandler(async (req, res, next) => {
     return next(new ApiError("Invalid national-id or password", 401));
   }
 
+  if (!user.verifyAccount) {
+    return next(new ApiError("Your account is not verified yet", 401));
+  }
+
   delete user._doc.password; // Remove password from response
 
   // Generate token
@@ -118,6 +122,10 @@ exports.loginPhonePatient = asyncHandler(async (req, res, next) => {
 
   if (!user || !(await bcrypt.compare(password, user.password))) {
     return next(new ApiError("Invalid phone number or password", 401));
+  }
+
+  if (!user.verifyAccount) {
+    return next(new ApiError("Your account is not verified yet", 401));
   }
 
   delete user._doc.password; // Remove password from response

@@ -6,6 +6,8 @@ const Scan = require('../models/scan.model');
 const { uploadSingleImage } = require('../middlewares/uploadImageMiddleware');
 const { cloudinary } = require('../config/cloudinary');
 const streamifier = require('streamifier');
+const Patient = require('../models/patient.model');
+const { initWhatsapp } = require('../utils/whatsappClient');
 
 // Upload single image
 exports.uploadUserImage = uploadSingleImage('scanImage');
@@ -56,7 +58,37 @@ exports.getScan = factory.getOne(Scan);
 // @desc    Create Scan
 // @route   POST  /api/v1/Scans
 // @access  Private/Admin
-exports.createScan = factory.createOne(Scan);
+exports.createScan = asyncHandler(async (req, res) => {
+const client = await initWhatsapp();
+const { patient } = req.body;   
+const patient1 = await Patient.findById(patient);
+    if (!patient1) {
+        return res.status(404).json({
+            success: false, message: 'Patient not found'
+        });
+    }
+const scan = await Scan.create(req.body)
+
+const url = `https://scanalyze-fcds.vercel.app/patient/${patient1._id}`;
+    
+const message = `Hello ${patient1.firstName}, your scan results are ready.   
+
+Please view them securely here: ${url}
+
+If you have any questions, feel free to contact us.
+
+Thank you,  
+[Scanalyze]`;
+    
+await client.sendMessage(`${patient1.phone}@c.us`, message);
+    
+res.status(201).json({
+        status: 'success',
+        data: {
+            scan,
+        },
+    });
+})
 
 // @desc    Update specific Scan
 // @route   PUT /api/v1/Scans/:id

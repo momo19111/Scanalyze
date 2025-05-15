@@ -1,5 +1,7 @@
 const factory = require('./factoryHandler');
 const labTest = require('../models/labTest.model');
+const Patient = require('../models/patient.model');
+const { initWhatsapp } = require('../utils/whatsappClient');
 const asyncHandler = require('express-async-handler');
 
 
@@ -18,12 +20,20 @@ exports.getlabTest = factory.getOne(labTest);
 // @route   POST  /api/v1/labTests
 // @access  Private/Admin
 exports.createlabTest = asyncHandler(async (req, res) => {
+  const client = await initWhatsapp();
   const { patient, branch, labTechnician, testResults } = req.body;
 
   if (!Array.isArray(testResults) || testResults.length === 0) {
     res.status(400);
     throw new Error("Test results must be a non-empty array.");
   }
+
+  const patient1 = await Patient.findById(patient);
+  if (!patient1) {
+    return res.status(404).json({
+      success: false, message: 'Patient not found'
+    });
+    }
 
   const now = new Date();
   const savedReports = [];
@@ -40,10 +50,20 @@ exports.createlabTest = asyncHandler(async (req, res) => {
 
     // This will trigger the pre('save') middleware, and populate patientSnapshot
     await report.save();
+    
 
     savedReports.push(report);
   }
+const url = `https://scanalyze-fcds.vercel.app/patient/${patient1._id}`;
+const message = `Hello ${patient1.firstName}, your lab test results are ready.
+  
+Please view them securely here: ${url}
 
+If you have any questions, feel free to contact us.
+
+Thank you,  
+[Scanalyze]`;
+  await client.sendMessage(`${patient1.phone}@c.us`, message);
   res.status(201).json({
     message: `${savedReports.length} lab report(s) created successfully.`,
     reports: savedReports,
