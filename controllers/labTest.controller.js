@@ -53,17 +53,26 @@ exports.createlabTest = asyncHandler(async (req, res) => {
     
 
     savedReports.push(report);
-  }
-const url = `https://scanalyze-fcds.vercel.app/patient/${patient1._id}`;
-const message = `Hello ${patient1.firstName}, your lab test results are ready.
-  
+    const url = `https://scanalyze-fcds.vercel.app/test/${report._id}`;
+    const nowFormatted = new Date().toLocaleString('en-US', {
+      dateStyle: 'full',
+      timeStyle: 'short',
+      hour12: true
+    });
+const message = `Hello ${patient1.firstName},
+
+Your *${report.testResults[0].category}* test results are ready.
+
+Test Date: ${nowFormatted}
+
 Please view them securely here: ${url}
 
 If you have any questions, feel free to contact us.
 
-Thank you,  
-[Scanalyze]`;
-  await client.sendMessage(`${patient1.phone}@c.us`, message);
+Thank you,
+Scanalyze Team`;
+    await client.sendMessage(`${patient1.phone}@c.us`, message);
+  }
   res.status(201).json({
     message: `${savedReports.length} lab report(s) created successfully.`,
     reports: savedReports,

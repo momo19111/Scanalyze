@@ -24,7 +24,42 @@ const labReportSchema = new mongoose.Schema({
     phone: String,
     email: String,
     gender: String,
-    nationalID: String
+    nationalID: String,
+    medicalHistory:  {
+        chronicDiseases: {
+            hasChronicDiseases: { type: Boolean, default: false },
+            diseasesList: [{ type: String }],
+            otherDiseases: { type: String }
+        },
+        allergies: {
+            hasAllergies: { type: Boolean, default: false },
+            allergyDetails: { type: String }
+        },
+        medications: {
+            takesMedications: { type: Boolean, default: false },
+            list: [
+            {
+                name: { type: String },
+                dosage: { type: String },
+                reason: { type: String }
+            }
+            ]
+        },
+        surgeries: {
+            hadSurgeries: { type: Boolean, default: false },
+            surgeryDetails: { type: String }
+        },
+        currentSymptoms: {
+            hasSymptoms: { type: Boolean, default: false },
+            symptomsDetails: { type: String }
+        },
+        lifestyle: {
+            smokes: { type: Boolean, default: false },
+            consumesAlcohol: { type: Boolean, default: false }
+        }
+},
+    birthDate: String,
+    age: Number
   },
   testResults: [testResultSchema]
 }, { timestamps: true });
@@ -91,7 +126,7 @@ labReportSchema.pre('findOneAndUpdate', async function (next) {
 labReportSchema.pre('save', async function (next) {
   if (this.isNew || this.isModified('patient')) {
       const Patient = mongoose.model('Patient');
-      const patientData = await Patient.findById(this.patient).lean();
+      const patientData = await Patient.findById(this.patient);
 
       if (patientData) {
         this.patientSnapshot = {
@@ -100,6 +135,7 @@ labReportSchema.pre('save', async function (next) {
           phone: patientData.phone,
           email: patientData.email,
           gender: patientData.gender,
+          medicalHistory: patientData.medicalHistory,
           nationalID: patientData.nationalID,
           birthDate: patientData.birthDate,
           age: patientData.age

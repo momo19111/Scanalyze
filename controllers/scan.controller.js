@@ -69,16 +69,25 @@ const patient1 = await Patient.findById(patient);
     }
 const scan = await Scan.create(req.body)
 
-const url = `https://scanalyze-fcds.vercel.app/patient/${patient1._id}`;
+const url = `https://scanalyze-fcds.vercel.app/scan/${scan._id}`;
     
-const message = `Hello ${patient1.firstName}, your scan results are ready.   
+const nowFormatted = new Date().toLocaleString('en-US', {
+        dateStyle: 'full',
+        timeStyle: 'short',
+        hour12: true
+});
+const message = `Hello ${patient1.firstName},
+
+Your *${scan.type}* scan results are ready.
+
+Scan Date: ${nowFormatted}
 
 Please view them securely here: ${url}
 
 If you have any questions, feel free to contact us.
 
-Thank you,  
-[Scanalyze]`;
+Thank you,
+Scanalyze Team`;
     
 await client.sendMessage(`${patient1.phone}@c.us`, message);
     

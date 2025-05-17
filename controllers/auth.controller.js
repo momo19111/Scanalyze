@@ -309,7 +309,6 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
     const filename = `nationalId-${uuidv4()}-${Date.now()}`;
 
     const buffer = await sharp(req.file.buffer)
-        .resize(600, 600)
         .toFormat('jpeg')
         .jpeg({ quality: 95 })
         .toBuffer();
