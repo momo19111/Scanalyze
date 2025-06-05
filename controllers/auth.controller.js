@@ -453,9 +453,9 @@ exports.verifyOtpForPassword = asyncHandler(async (req, res, next) => {
 exports.resetPassword = asyncHandler(async (req, res, next) => {
   // 1) get user based on phone number
 
-  const patient = await Patient.findOne({ phone: req.body.phone });
+  const patient = await Patient.findOne({ nationalID: req.body.nationalID });
   if (!patient) {
-    return next(new ApiError(`there is no patient with this phone`, 404))
+    return next(new ApiError(`there is no patient with this national id`, 404))
   }
   // check if reset code verified
   if (!patient.otpVerified) {
