@@ -381,17 +381,23 @@ exports.getProfile = asyncHandler(async (req, res) => {
 // @access Public
 exports.forgetPassword = asyncHandler(async (req, res, next) => {
   const client = await initWhatsapp();
-  const { phone } = req.body;
+  const { nationalID } = req.body;
+
+  if (!nationalID || nationalID.length !== 14) {
+    return next(new ApiError("Invalid national ID format", 400));
+  }
+  const patient = await Patient.findOne({ nationalID });
+  if (!patient) {
+    return next(new ApiError("Patient not found", 404));
+  }
+
+  const phone = patient.phone;
 
   if (!phone || !/^201(0|1|2|5)[0-9]{8}$/.test(phone)) {
     return next(new ApiError("Invalid Egyptian phone number format"), 400);
   }
 
-  const patient = await Patient.findOne({ phone });
 
-  if (!patient) {
-    return next(new ApiError("Patient not found", 404));
-  }
 
   const { otp, expiry } = generateOTP();
   const hashedOtp = await crypto.createHash('sha256').update(otp).digest('hex');
