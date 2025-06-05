@@ -12,7 +12,7 @@ const { generateOTP } = require("../utils/otpGenerator");
 const { initWhatsapp } = require("../utils/whatsappClient");
 const { cloudinary } = require('../config/cloudinary');
 const streamifier = require('streamifier');
-
+const crypto = require('crypto');
 
 exports.register = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -201,32 +201,38 @@ exports.allowedTo = (...roles) =>
   });
 
 exports.sendOtpToWhatsApp = asyncHandler(async (req, res, next) => {
-  const client = await initWhatsapp();
   const { phone } = req.body;
-
   if (!phone || !/^201(0|1|2|5)[0-9]{8}$/.test(phone)) {
-    return next(new ApiError("Invalid Egyptian phone number format"), 400);
+      return next(new ApiError("Invalid Egyptian phone number format"), 400);
   }
 
-  const { otp, expiry } = generateOTP();
-  const message = `Your 6-digit OTP is: ${otp}. It will expire in 5 minutes.`;
+  const patient = await Patient.findOne({ phone });
+  if (patient?.isPhoneVerified) {
+    return next(new ApiError("Phone number already verified", 400));
+  } 
 
-  await client.sendMessage(`${phone}@c.us`, message);
+    const client = await initWhatsapp();
 
-  await Patient.updateOne(
-    { phone },
-    {
-      $setOnInsert: { phone }, // Set phone only if inserting
-      $set: {
-        otp,
-        otpExpiry: expiry,
-        isPhoneVerified: false,
+    const { otp, expiry } = generateOTP();
+    const message = `*${otp}* is your verification code.\ndo not share this code with anyone,\nthis code expires in 5 minutes.`;
+
+    await client.sendMessage(`${phone}@c.us`, message);
+
+
+    await Patient.updateOne(
+      { phone },
+      {
+        $setOnInsert: { phone }, // Set phone only if inserting
+        $set: {
+          otp,
+          otpExpiry: expiry,
+          isPhoneVerified: false,
+        },
       },
-    },
-    { upsert: true }
-  );
+      { upsert: true }
+    );
 
-  res.status(200).json({ message: "OTP sent to WhatsApp successfully" });
+    res.status(200).json({ message: "OTP sent to WhatsApp successfully" });
 });
 
 exports.verifyOtp = asyncHandler(async (req, res, next) => {
@@ -252,8 +258,7 @@ exports.verifyOtp = asyncHandler(async (req, res, next) => {
   }
 
   patient.isPhoneVerified = true;
-  patient.otp = null;
-  patient.otpExpiry = null;
+  patient.otpVerified = true; // Mark OTP as verified
   await patient.save();
 
   return res
@@ -289,6 +294,9 @@ exports.registerPatientInfo = asyncHandler(async (req, res, next) => {
   patient.password = password;
   patient.nationalIDImg = nationalIDImg;
   patient.medicalHistory = medicalHistory;
+  patient.otp = undefined;
+  patient.otpExpiry = undefined;
+  patient.otpVerified = undefined;
 
   const token = generateToken(patient._id);
 
@@ -304,66 +312,158 @@ exports.uploadUserImage = uploadSingleImage("nationalIDImg");
 
 // Image processing
 exports.resizeImage = asyncHandler(async (req, res, next) => {
-    if (!req.file) return next();
+  if (!req.file) return next();
 
-    const filename = `nationalId-${uuidv4()}-${Date.now()}`;
+  const filename = `nationalId-${uuidv4()}-${Date.now()}`;
 
-    const buffer = await sharp(req.file.buffer)
-        .toFormat('jpeg')
-        .jpeg({ quality: 95 })
-        .toBuffer();
+  const buffer = await sharp(req.file.buffer)
+    .toFormat('jpeg')
+    .jpeg({ quality: 95 })
+    .toBuffer();
 
-    await new Promise((resolve, reject) => {
-        const upload_stream = cloudinary.uploader.upload_stream(
-        {
-            folder: 'patient/nationalId',
-            public_id: filename,
-            resource_type: 'image',
-        },
-        (error, result) => {
-            if (error) return reject(error);
-            req.body.nationalIDImg = result.secure_url; 
-            resolve();
-        }
-        );
-        streamifier.createReadStream(buffer).pipe(upload_stream);
-    });
+  await new Promise((resolve, reject) => {
+    const upload_stream = cloudinary.uploader.upload_stream(
+      {
+        folder: 'patient/nationalId',
+        public_id: filename,
+        resource_type: 'image',
+      },
+      (error, result) => {
+        if (error) return reject(error);
+        req.body.nationalIDImg = result.secure_url;
+        resolve();
+      }
+    );
+    streamifier.createReadStream(buffer).pipe(upload_stream);
+  });
 
-    next();
+  next();
 });
 
 
 
 
 exports.getProfile = asyncHandler(async (req, res) => {
-    const { patientId } = req.params; 
-    const patient = await Patient.findById(patientId);  
+  const { patientId } = req.params;
+  const patient = await Patient.findById(patientId);
 
-    if (!patient) {
-        return res.status(404).json({ message: "Patient not found" });
+  if (!patient) {
+    return res.status(404).json({ message: "Patient not found" });
+  }
+
+  const publicPatientProfile = {
+    firstName: patient.firstName,
+    lastName: patient.lastName,
+    phone: patient.phone,
+    email: patient.email,
+    gender: patient.gender,
+    birthDate: patient.birthDate,
+    nationalID: patient.nationalID,
+    age: patient.age,
+    medicalHistory: {
+      chronicDiseases: patient.medicalHistory.chronicDiseases,
+      allergies: patient.medicalHistory.allergies,
+      medications: patient.medicalHistory.medications,
+      surgeries: patient.medicalHistory.surgeries,
+      currentSymptoms: patient.medicalHistory.currentSymptoms,
+      lifestyle: patient.medicalHistory.lifestyle
     }
+  };
 
-    const publicPatientProfile = {
-        firstName: patient.firstName,
-        lastName: patient.lastName,
-        phone: patient.phone,
-        email: patient.email,
-        gender: patient.gender,
-        birthDate: patient.birthDate,
-        nationalID: patient.nationalID,
-        age: patient.age,
-        medicalHistory: {
-            chronicDiseases: patient.medicalHistory.chronicDiseases,
-            allergies: patient.medicalHistory.allergies,
-            medications: patient.medicalHistory.medications,
-            surgeries: patient.medicalHistory.surgeries,
-            currentSymptoms: patient.medicalHistory.currentSymptoms,
-            lifestyle: patient.medicalHistory.lifestyle
-        }
-    };
-
-    res.status(200).json({
-        message: "Patient profile retrieved successfully",
-        patient: publicPatientProfile
-    });
+  res.status(200).json({
+    message: "Patient profile retrieved successfully",
+    patient: publicPatientProfile
+  });
 });
+
+// @desc forget password
+// @route POST /api/v1/auth/forgetPassword
+// @access Public
+exports.forgetPassword = asyncHandler(async (req, res, next) => {
+  const client = await initWhatsapp();
+  const { phone } = req.body;
+
+  if (!phone || !/^201(0|1|2|5)[0-9]{8}$/.test(phone)) {
+    return next(new ApiError("Invalid Egyptian phone number format"), 400);
+  }
+
+  const patient = await Patient.findOne({ phone });
+
+  if (!patient) {
+    return next(new ApiError("Patient not found", 404));
+  }
+
+  const { otp, expiry } = generateOTP();
+  const hashedOtp = await crypto.createHash('sha256').update(otp).digest('hex');
+
+  patient.otp = hashedOtp;
+  patient.otpExpiry = expiry;
+  patient.otpVerified = false;
+  await patient.save();
+
+  const message = `*${otp}* is your password reset code.\ndo not share this code with anyone,\nthis code expires in 5 minutes.`;
+
+  try {
+    await client.sendMessage(`${phone}@c.us`, message);
+  }
+  catch (error) {
+    patient.otp = undefined;
+    patient.otpExpiry = undefined;
+    patient.otpVerified = undefined;
+    await patient.save();
+    return next(new ApiError("Failed to send OTP via WhatsApp", 500));
+  }
+
+  res.status(200).json({ status: 'Success', message: 'otp sent to WhatsApp successfully' })
+})
+
+
+// @desc verify otp
+// @route POST /api/v1/auth/verifyOtp
+// @access Public
+
+exports.verifyOtpForPassword = asyncHandler(async (req, res, next) => {
+  // 1) get user based on  reset code
+  const hashedOtp = crypto.createHash('sha256').update(req.body.otp).digest('hex');
+
+  const patient = await Patient.findOne({ otp: hashedOtp, otpExpiry: { $gt: Date.now() } });
+
+  if (!patient) {
+    return next(new ApiError(`Invalid otp or expired`, 400))
+  }
+
+  // 2) Reset code valid
+  patient.otpVerified = true
+
+  await patient.save();
+
+  res.status(200).json({ status: 'Success', message: 'otp verified' })
+})
+
+// @desc reset password
+// @route PUT /api/v1/auth/resetPassword
+// @access Public
+
+exports.resetPassword = asyncHandler(async (req, res, next) => {
+  // 1) get user based on phone number
+
+  const patient = await Patient.findOne({ phone: req.body.phone });
+  if (!patient) {
+    return next(new ApiError(`there is no patient with this phone`, 404))
+  }
+  // check if reset code verified
+  if (!patient.otpVerified) {
+    return next(new ApiError(`otp has not been verified`, 400))
+  }
+
+  patient.password = req.body.newPassword;
+  patient.otp = undefined;
+  patient.otpExpiry = undefined;
+  patient.otpVerified = undefined;
+
+  await patient.save();
+  // 3) if everything is ok, generate token
+  const token = generateToken(patient._id);
+
+  res.status(200).json({ data: patient, token });
+})

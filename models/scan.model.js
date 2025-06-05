@@ -17,6 +17,8 @@ const scanSchema = new mongoose.Schema({
         ref: 'Patient',
         required: [true, 'Please provide a patient'],
     },
+    scanTechnician: { type: mongoose.Schema.Types.ObjectId, ref: 'Staff', required: true },
+    branch: { type: mongoose.Schema.ObjectId, ref: 'Branch' },
     patientSnapshot: {
     firstName: String,
     lastName: String,

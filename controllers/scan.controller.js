@@ -48,12 +48,12 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
 // @desc    Get list of Scan
 // @route   GET /api/v1/Scans
 // @access  Private/Admin
-exports.getAllScans = factory.getAll(Scan);
+exports.getAllScans = factory.getAll(Scan, 'Branch', { path: 'branch', select: 'name -_id' });
 
 // @desc    Get specific Scan by id
 // @route   GET /api/v1/Scans/:id
 // @access  Private/Admin
-exports.getScan = factory.getOne(Scan);
+exports.getScan = factory.getOne(Scan, {path: 'branch', select: 'name -_id' });
 
 // @desc    Create Scan
 // @route   POST  /api/v1/Scans

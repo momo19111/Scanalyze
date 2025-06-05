@@ -66,6 +66,10 @@ const patientSchema = new mongoose.Schema({
 },
     otp: String,
     otpExpiry: Date,
+    otpVerified: {
+        type: Boolean,
+        default: false,
+    },
     isPhoneVerified: {
         type: Boolean,
         default: false,
