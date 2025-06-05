@@ -44,12 +44,12 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
 // @desc    Get list of staff
 // @route   GET /api/v1/staff
 // @access  Private/Admin
-exports.getAllStaff = factory.getAll(Staff, '', { path: 'branch', select: 'name -_id' })
+exports.getAllStaff = factory.getAll(Staff, '', { path: 'branch', select: 'name _id' })
 
 // @desc    Get specific staff by id
 // @route   GET /api/v1/staff/:id
 // @access  Private/Admin
-exports.getStaff = factory.getOne(Staff,  { path: 'branch', select: 'name -_id' });
+exports.getStaff = factory.getOne(Staff,  { path: 'branch', select: 'name _id' });
 
 // @desc    Create Staff
 // @route   POST  /api/v1/staffs
