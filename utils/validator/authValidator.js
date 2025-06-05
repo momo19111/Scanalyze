@@ -100,3 +100,23 @@ exports.loginNationalIDValidator = [
 
     validatorMiddleware,
 ];
+
+exports.changepasswordValidator = [
+    check('newPassword')
+        .notEmpty()
+        .withMessage('New password is required')
+        .isLength({ min: 6 })
+        .withMessage('Password must be at least 6 characters'),
+    check('confirmPassword')
+        .notEmpty()
+        .withMessage('Confirm password is required')
+        .isLength({ min: 6 })
+        .withMessage('Password must be at least 6 characters')
+        .custom((val, { req }) => {
+            if (val !== req.body.newPassword) {
+                throw new Error('Passwords do not match');
+            }
+            return true;
+        }),
+    validatorMiddleware
+]

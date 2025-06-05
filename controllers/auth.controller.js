@@ -467,3 +467,17 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({ data: patient, token });
 })
+
+exports.changePasswordForStaff = asyncHandler(async(req, res, next) => {
+  const staff = await Staff.findById(req.params.id);
+  if (!staff) {
+    return next(new ApiError("staff not found", 404));
+  }
+
+  // update password
+  
+  staff.password = req.body.newPassword;
+  await staff.save();
+
+  res.status(200).json({ message: "Password changed successfully" });
+})

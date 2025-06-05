@@ -11,9 +11,13 @@ const {
         resizeImage,
         forgetPassword,
         verifyOtpForPassword,
-        resetPassword } = require('../controllers/auth.controller');
+        resetPassword,
+        changePasswordForStaff,
+        allowedTo,
+        protect
+} = require('../controllers/auth.controller');
         
-const { loginEmailValidator, loginPhoneValidator, loginNationalIDValidator, registerValidator } = require('../utils/validator/authValidator');
+const { loginEmailValidator, loginPhoneValidator, loginNationalIDValidator, registerValidator, changepasswordValidator } = require('../utils/validator/authValidator');
 const {sendOtpToWhatsApp, verifyOtp} = require("../controllers/auth.controller");
 
 router.post("/send-otp", sendOtpToWhatsApp);
@@ -27,6 +31,7 @@ router.get('/patient/getProfile/:patientId', getProfile);
 router.post('/patient/forgetPassword', forgetPassword);
 router.post('/patient/verifyOtpForPassword', verifyOtpForPassword);
 router.post('/patient/resetPassword', resetPassword);
+router.post('/staff/changePassword/:id',protect, allowedTo('Admin'), changepasswordValidator, changePasswordForStaff);
 
 
 module.exports = router ;
