@@ -424,7 +424,7 @@ exports.forgetPassword = asyncHandler(async (req, res, next) => {
     const lastTwoDigits = phone.slice(-2);
     const maskedNumber = `${countryCode}${maskedSection}${lastTwoDigits}`;
 
-  res.status(200).json({ status: 'Success', message:  `OTP sent successfully to your WhatsApp number ${maskedNumber}`})
+  res.status(200).json({ status: 'Success', message:  `OTP sent successfully to your WhatsApp number`, phone: maskedNumber})
 })
 
 
