@@ -419,8 +419,12 @@ exports.forgetPassword = asyncHandler(async (req, res, next) => {
     await patient.save();
     return next(new ApiError("Failed to send OTP via WhatsApp", 500));
   }
+    const countryCode = phone.slice(0, 3); 
+    const maskedSection = '*'.repeat(phone.length - 6);
+    const lastTwoDigits = phone.slice(-2);
+    const maskedNumber = `${countryCode}${maskedSection}${lastTwoDigits}`;
 
-  res.status(200).json({ status: 'Success', message: 'otp sent to WhatsApp successfully' })
+  res.status(200).json({ status: 'Success', message:  `OTP sent successfully to your WhatsApp number ${maskedNumber}`})
 })
 
 
