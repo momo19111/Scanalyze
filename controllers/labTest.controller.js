@@ -9,12 +9,12 @@ const asyncHandler = require('express-async-handler');
 // @desc    Get list of labTest
 // @route   GET /api/v1/labTests
 // @access  Private/Admin
-exports.getAlllabTests = factory.getAll(labTest, 'Branch',  { path: 'branch', select: 'name -_id' });
+exports.getAlllabTests = factory.getAll(labTest, 'Branch',  { path: 'branch', select: 'name _id' });
 
 // @desc    Get specific labTest by id
 // @route   GET /api/v1/labTests/:id
 // @access  Private/Admin
-exports.getlabTest = factory.getOne(labTest, { path: 'branch', select: 'name -_id' });
+exports.getlabTest = factory.getOne(labTest, { path: 'branch', select: 'name _id' });
 
 // @desc    Create labTest
 // @route   POST  /api/v1/labTests
