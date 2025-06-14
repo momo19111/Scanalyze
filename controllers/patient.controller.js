@@ -152,6 +152,41 @@ exports.otpForEditPhoneNumber = asyncHandler(async (req, res, next) => {
     
 })
 
+exports.otpForVerificationPhoneFromReceptiontist = asyncHandler(async (req, res, next) => {
+    const { newphone } = req.body;
+    const patient = await Patient.findById(req.params.id);
+    if (!patient) {
+        return next(new apiError('Patient not found', 404));
+    }
+
+    if(!patient.verifyAccount) {
+        return next(new apiError('Patient account is not verified.', 400));
+    }
+    
+    const client = await initWhatsapp();
+    const { otp, expiry } = generateOTP();
+    const hashedOtp = await crypto.createHash('sha256').update(otp).digest('hex');
+
+    patient.otp = hashedOtp;
+    patient.otpExpiry = expiry;
+    patient.otpVerified = false;
+    
+    await patient.save()
+    const message = `Hello ${patient.firstName}, your OTP for changing phone number is: ${otp}.\nthis code expires in 5 minutes.`;
+    
+    await client.sendMessage(`${newphone}@c.us`, message);
+
+    res.status(200).json({
+        status: 'success',
+        message: 'OTP sent to the current phone number for verification.',
+        data: {
+            patientId: patient._id,
+            newPhone: newphone
+        }
+    });
+    
+})
+
 exports.verifyOtpForEditPhoneNumber = asyncHandler(async (req, res, next) => {
     // 1) get user based on  reset code
     const hashedOtp = crypto.createHash('sha256').update(req.body.otp).digest('hex');

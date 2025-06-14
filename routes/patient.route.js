@@ -8,6 +8,7 @@ const { getPatient,
         verifyPatient,
         declinePatient,
         otpForEditPhoneNumber,
+        otpForVerificationPhoneFromReceptiontist,
         verifyOtpForEditPhoneNumber,
         EditPhoneNumber,
         editEmail,
@@ -60,6 +61,10 @@ router
 router
     .route('/changePassword/:id')
     .post(changePassword);
+
+router
+    .route('/otpForVerificationPhone/:id')
+    .post(otpForVerificationPhoneFromReceptiontist);
 
 
 module.exports = router;
