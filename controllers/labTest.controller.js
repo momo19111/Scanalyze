@@ -71,6 +71,13 @@ If you have any questions, feel free to contact us.
 
 Thank you,
 Scanalyze Team`;
+    
+    if (patient1.isPhoneVerified === false) {
+      return res.status(400).json({
+        success: false,
+        message: 'Patient phone number is not verified'
+      });
+    }
     await client.sendMessage(`${patient1.phone}@c.us`, message);
   }
   res.status(201).json({
