@@ -121,11 +121,13 @@ exports.otpForEditPhoneNumber = asyncHandler(async (req, res, next) => {
     if(!patient.verifyAccount) {
         return next(new apiError('Patient account is not verified.', 400));
     }
-    
-    if (patient.phone === newphone) {
-        return next(new apiError('New phone number must be different from the current one.', 400));
-    }
 
+    const existsPatientWithPhone = await Patient.findOne({ phone: newphone });
+
+    if (existsPatientWithPhone) {
+        return next(new apiError('A patient with this phone number already exists.', 400));
+    }
+    
     const client = await initWhatsapp();
     const { otp, expiry } = generateOTP();
     const hashedOtp = await crypto.createHash('sha256').update(otp).digest('hex');
@@ -137,7 +139,7 @@ exports.otpForEditPhoneNumber = asyncHandler(async (req, res, next) => {
     await patient.save()
     const message = `Hello ${patient.firstName}, your OTP for changing phone number is: ${otp}.\nthis code expires in 5 minutes.`;
     
-    await client.sendMessage(`${patient.phone}@c.us`, message);
+    await client.sendMessage(`${newphone}@c.us`, message);
 
     res.status(200).json({
         status: 'success',
@@ -233,6 +235,11 @@ exports.editEmail = asyncHandler(async (req, res, next) => {
     }
     if (patient.email === newEmail) {
         return next(new apiError('New email must be different from the current one.', 400));
+    }
+
+    const emailExists = await Patient.findOne({ email: newEmail });
+    if (emailExists) {
+        return next(new apiError('Email already exists. Please use a different email.', 400));
     }
 
     patient.email = newEmail;

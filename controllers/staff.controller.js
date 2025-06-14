@@ -66,6 +66,18 @@ exports.updateStaff = factory.updateOne(Staff);
 // @access  Private/Admin
 exports.deleteStaff = factory.deleteOne(Staff);
 
+exports.deActiveStaff = asyncHandler(async (req, res, next) => {
+    const document = await Staff.findByIdAndUpdate(
+        req.params.id,
+        { active: false },
+        { new: true }
+    );
+    if (!document) {
+        return next(new ApiError(`No document for this id ${req.params.id}`, 404));
+    }
+    res.status(200).json({ data: document });
+});
+
 // exports.changeStaffPassword = asyncHandler(async (req, res, next) => {
 //     const document = await Staff.findByIdAndUpdate(
 //         req.params.id,
