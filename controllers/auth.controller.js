@@ -32,8 +32,12 @@ exports.loginEmail = asyncHandler(async (req, res, next) => {
 
   const user = await Staff.findOne({ email });
 
-  if (!user || !(await bcrypt.compare(password, user.password)) || !user.active) {
+  if (!user || !(await bcrypt.compare(password, user.password))) {
     return next(new ApiError("Invalid email or password", 401));
+  }
+
+  if (!user.active) {
+    return next(new ApiError("Your account has been deactivated. Please contact your administrator", 401));
   }
 
   delete user._doc.password; // Remove password from response
@@ -92,8 +96,12 @@ exports.loginPhone = asyncHandler(async (req, res, next) => {
 
   const user = await Staff.findOne({ phone });
 
-  if (!user || !(await bcrypt.compare(password, user.password)) || !user.active) {
+  if (!user || !(await bcrypt.compare(password, user.password))) {
     return next(new ApiError("Invalid phone number or password", 401));
+  }
+
+  if (!user.active) {
+    return next(new ApiError("Your account has been deactivated. Please contact your administrator", 401));
   }
 
   delete user._doc.password; // Remove password from response
