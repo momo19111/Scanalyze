@@ -72,13 +72,9 @@ If you have any questions, feel free to contact us.
 Thank you,
 Scanalyze Team`;
     
-    if (patient1.isPhoneVerified === false) {
-      return res.status(400).json({
-        success: false,
-        message: 'Patient phone number is not verified'
-      });
+    if (patient1.isPhoneVerified === true) {
+      await client.sendMessage(`${patient1.phone}@c.us`, message);
     }
-    await client.sendMessage(`${patient1.phone}@c.us`, message);
   }
   res.status(201).json({
     message: `${savedReports.length} lab report(s) created successfully.`,
