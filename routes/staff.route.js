@@ -7,6 +7,8 @@ const { getStaff,
         deleteStaff,
         uploadUserImage,
         resizeImage,
+        deActiveStaff,
+        activeStaff
 
 } = require('../controllers/staff.controller');
 const { protect, allowedTo } = require('../controllers/auth.controller');
@@ -23,6 +25,15 @@ router
     .get(getUserValidator, getStaff)
     .put(allowedTo('Admin'), uploadUserImage, resizeImage, updateUserValidator, updateStaff )
     .delete(allowedTo('Admin'), deleteUserValidator, deleteStaff);
+
+router
+    .route('/deactivate/:id')
+    .put(allowedTo('Admin'), deActiveStaff);
+
+router
+    .route('/activate/:id')
+    .put(allowedTo('Admin'), activeStaff);
+
 
 
 module.exports = router;

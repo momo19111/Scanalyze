@@ -73,11 +73,30 @@ exports.deActiveStaff = asyncHandler(async (req, res, next) => {
         { new: true }
     );
     if (!document) {
-        return next(new ApiError(`No document for this id ${req.params.id}`, 404));
+        return next(new ApiError(`No Staff for this id`, 404));
     }
-    res.status(200).json({ data: document });
+    res.status(200).json({
+        status: 'sucess',
+        message: 'Staff deactivated successfully',
+        data: document
+    });
 });
 
+exports.activeStaff = asyncHandler(async (req, res, next) => {
+    const document = await Staff.findByIdAndUpdate(
+        req.params.id,
+        { active: true },
+        { new: true }
+    );
+    if (!document) {
+        return next(new ApiError(`No staff for this id`, 404));
+    }
+    res.status(200).json({
+        status: 'sucess',
+        message: 'Staff activated successfully',
+        data: document
+    });
+});
 // exports.changeStaffPassword = asyncHandler(async (req, res, next) => {
 //     const document = await Staff.findByIdAndUpdate(
 //         req.params.id,

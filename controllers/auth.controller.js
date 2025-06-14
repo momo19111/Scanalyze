@@ -32,7 +32,7 @@ exports.loginEmail = asyncHandler(async (req, res, next) => {
 
   const user = await Staff.findOne({ email });
 
-  if (!user || !(await bcrypt.compare(password, user.password))) {
+  if (!user || !(await bcrypt.compare(password, user.password)) || !user.active) {
     return next(new ApiError("Invalid email or password", 401));
   }
 
@@ -92,7 +92,7 @@ exports.loginPhone = asyncHandler(async (req, res, next) => {
 
   const user = await Staff.findOne({ phone });
 
-  if (!user || !(await bcrypt.compare(password, user.password))) {
+  if (!user || !(await bcrypt.compare(password, user.password)) || !user.active) {
     return next(new ApiError("Invalid phone number or password", 401));
   }
 
