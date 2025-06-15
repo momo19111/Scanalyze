@@ -24,9 +24,9 @@ const xss = require("xss-clean"); // Middleware to sanitize data from scripting 
 connectDB();
 
 // Initialize WhatsApp client
-// initWhatsapp()
-//   .then(() => console.log("WhatsApp client initialized successfully"))
-//   .catch((err) => console.error("Failed to initialize WhatsApp client:", err));
+initWhatsapp()
+  .then(() => console.log("WhatsApp client initialized successfully"))
+  .catch((err) => console.error("Failed to initialize WhatsApp client:", err));
 
 const corsOptions = {
   origin: function (origin, callback) {
