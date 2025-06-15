@@ -15,6 +15,9 @@ const scanRoute = require("./routes/scan.route");
 const labTestRoute = require("./routes/labTest.route");
 const compression = require("compression");
 const globalError = require("./middlewares/globalError");
+const hpp = require("hpp"); // Middleware to protect against HTTP Parameter Pollution attacks
+const mongoSanitize = require("express-mongo-sanitize"); // Middleware to sanitize data from query injection
+const xss = require("xss-clean"); // Middleware to sanitize data from scripting attacks
 
 
 // Connect to MongoDB
@@ -31,6 +34,10 @@ const corsOptions = {
   },
   credentials: true, // Allow credentials (cookies)
 };
+
+// to apply data sanitize
+app.use(mongoSanitize()); // from query injection
+app.use(xss()) // to convert any script in js or html to string // from scripting
 
 // Middleware
 app.use(express.json());

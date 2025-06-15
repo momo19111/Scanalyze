@@ -8,8 +8,8 @@ exports.createScanValidator = [
         .notEmpty()
         .withMessage('Scan name is required') 
         .toLowerCase()
-        .isIn(['brain analysis', 'lung analysis (x-ray)', 'kidney analysis', 'lung analysis (Plasma)', 'retinal analysis', 'knee analysis'])
-        .withMessage('Name must be one of: Brain Analysis, Lung Analysis (X-Ray), Kidney Analysis, Lung Analysis (Plasma), Retinal Analysis, Knee Analysis'),
+        .isIn(['brain scan', 'lung scan (x-ray)', 'kidney scan', 'lung scan (Plasma)', 'retinal scan', 'knee scan'])
+        .withMessage('Name must be one of: Brain Scan, Lung Scan (X-Ray), Kidney Scan, Lung Scan (Plasma), Retinal Scan, Knee Scan'),
     
     
     check('patient')
@@ -41,8 +41,8 @@ exports.updateScanValidator = [
     check('type')
         .optional() 
         .toLowerCase()
-        .isIn(['brain analysis', 'lung analysis (x-ray)', 'kidney analysis', 'lung analysis (Plasma)', 'retinal analysis', 'knee analysis'])
-        .withMessage('Name must be one of: Brain Analysis, Lung Analysis (X-Ray), Kidney Analysis, Lung Analysis (Plasma), Retinal Analysis, Knee Analysis'),
+        .isIn(['brain scan', 'lung scan (x-ray)', 'kidney scan', 'lung scan (Plasma)', 'retinal scan', 'knee scan'])
+        .withMessage('Name must be one of: Brain Scan, Lung Scan (X-Ray), Kidney Scan, Lung Scan (Plasma), Retinal Scan, Knee Scan'),
     
     check('patient')
         .optional() 
